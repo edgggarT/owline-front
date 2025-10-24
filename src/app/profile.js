@@ -35,7 +35,7 @@ export default function Profile() {
             const response = await axios.patch(`${API_URLS.BASE_URL}${API_URLS.PROFILE}`, values)
 
             if (response.status === 200) {
-                Alert.alert('Exito', response.data.msg || 'Tus datos han sido actualizados') 
+                Alert.alert('Exito', 'Tus datos han sido actualizados') 
 
                 const newName = response.data.name;
                 const newEmail = response.data.email
@@ -47,11 +47,20 @@ export default function Profile() {
                     })
                 }
                 router.back()
-            }
+            } 
         } catch (error) {
-            const errorMessage = error.response?.data?.msg || 'Error de conexion o datos invalidos'
-            Alert.alert('Error', errorMessage);
-            console.error('Error al actualizar perfil: ', error.response?.data || error.message)
+            console.error('Error al actualizar perfil: ', error.response?.data)
+
+            if (error.response) {
+                const statusCode = error.response.status
+                const err = error.response?.data.msg
+
+                if (statusCode === 404) {
+                    Alert.alert('Error', err)
+                } else if (statusCode === 500) {
+                    Alert.alert('Error', err)
+                }
+            }
         } finally {
             setSubmitting(false)
             setIsSaving(false)

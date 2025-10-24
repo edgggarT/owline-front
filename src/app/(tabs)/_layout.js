@@ -52,7 +52,7 @@ function IndexScreenTab() {
                 name="IndexMain" 
                 component={Index} 
                 options={{ 
-                    title: 'Documentacion',
+                    title: 'logs',
                     headerShown: true,
                     headerTitle: 'Registros (Logs)',
                     headerTitleAlign: "left",

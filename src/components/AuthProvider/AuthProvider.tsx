@@ -1,12 +1,10 @@
 import {useEffect, useState} from 'react'
+import { Alert } from 'react-native'
 import axios from 'axios'
 import { router } from 'expo-router'
 
-
-
 import { API_URLS } from '../../constants/ApiConfig'
-import ApiClient from '../../constants/ApiClient'
-import { AuthContext, UserInfo } from '../../hooks/AuthContext'     // PARA CREAR COMPONENTE PROVIDER
+import { AuthContext, UserInfo, RegisterResult, AuthContextType} from '../../hooks/AuthContext'     // PARA CREAR COMPONENTE PROVIDER
 import { saveAuthToken, loadAuthToken, removeAuthToken } from '../../hooks/AuthStorage'  // FUNCIONES QUE VALIDAN TOKEN
 
 
@@ -21,7 +19,7 @@ export const AuthProvider = ({ children }) => {
         if (!token) return false;
 
         try {
-            const response = await ApiClient.get(API_URLS.PROFILE)
+            const response = await axios.get(`${API_URLS.BASE_URL}${API_URLS.PROFILE}`)
             const {name, email} = response.data
             setUserInfo({name, email})
         } catch (e) {
@@ -60,30 +58,35 @@ export const AuthProvider = ({ children }) => {
         setUserInfo(newInfo)
     }
 
-    async function login(email, password) {
+    async function login(email: string, password:string) {
         setIsLoading(true)
         try {
-            const response = await ApiClient.post(API_URLS.LOGIN, {
+            const response = await axios.post(`${API_URLS.BASE_URL}${API_URLS.LOGIN}`, {
                 email,
                 password
             });
 
-            const token = response.data.token;
-            console.log(token)
-            if (token) {
-                await saveAuthToken(token)
-                setAuthToken(token)
-                await fetchUserInfo(token)
+            if (response.data.token !== undefined) {
+                const token = response.data.token;
+                console.log(token)
+                if (token) {
+                    await saveAuthToken(token)
+                    setAuthToken(token)
+                    await fetchUserInfo(token)
+                    setIsLoading(false)
+                    router.replace({ pathname: '/', params: { logued: 'true' } })
+                    return true;
+                }
                 setIsLoading(false)
-                router.replace({ pathname: '/', params: { logued: 'true' } })
                 return true;
+            } else {
+                setIsLoading(false)
+                return false
             }
-            setIsLoading(false)
-            return true;
         } catch (e) {
             console.error('error de autenticacion: ', e.response?.data || e.message)
             setIsLoading(false)
-            return false
+            throw e;
         }
     };
 
@@ -94,7 +97,7 @@ export const AuthProvider = ({ children }) => {
         router.replace('/login')
     }
 
-    async function register(name, email, password) {
+    async function register(name: string, email: string, password: string) {
         setIsLoading(true)
         try {
             const response = await axios.post(`${API_URLS.BASE_URL}${API_URLS.REGISTER}`, {
@@ -102,12 +105,29 @@ export const AuthProvider = ({ children }) => {
                 email,
                 password,
             })
-            setIsLoading(false)    
-            router.replace({ pathname: '/login', params: { registered: 'true' } })
-            return true
+            console.log(response.data)
+            if (response.status === 200 || response.status === 201) {
+                setIsLoading(false)    
+                router.replace({ pathname: '/login', params: { registered: 'true' } })
+                return {success: true} as RegisterResult
+            }
+            setIsLoading(false)
+            return {success: true}
         } catch (e) {
             console.error('Error de registro en el backend: ', e.response?.data || e.message)
-            return false
+            
+             if (axios.isAxiosError(e) && !e.response) {
+                setIsLoading(false)
+                Alert.alert('Error de conexion, verifique su conexion a internet')
+                return {success: false, type: 'network'} as RegisterResult
+            } else if (e.response && e.response.status === 409) {
+                setIsLoading(false)
+                return {success: false, type: 'conflict'} as RegisterResult
+            } else {
+                setIsLoading(false)
+                Alert.alert('Error desconocido', 'Ocurrio un error inesperado')
+                return {success: false, type: 'unknown'} as RegisterResult
+            }
         }
     }
 

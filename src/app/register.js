@@ -1,4 +1,4 @@
-import { View, Text, Alert, TouchableOpacity } from "react-native";
+import { View, Text, Alert, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
 import React, {useState} from "react";
 import { Formik, useFormikContext } from "formik";
 import { router } from "expo-router";
@@ -34,75 +34,77 @@ export default function Register() {
 
     async function onSubmit(values, {setSubmitting}) {
         console.log('Datos del front al back: ', values)
-
+        
         try {
             const success = await register(values.name, values.email, values.password)
+
             if (!success) {
                 Alert.alert('Error de registro: ', 'Correo ya registrado por otro usuario!')
             }
         } catch (e) { 
-            Alert.alert('Error de conexion, Verifique su internet o intentelo mas tarde')
+            Alert.alert('Error Desconocido', 'Ha ocurrido un problema inesperado')
         } finally {
             setSubmitting(false)
         }
     }
 
     return (
-        <View style={styles.container}>
-            <Formik initialValues={initialValues} 
-                    validationSchema={RegisterSchema}
-                    onSubmit={onSubmit}>    
+        <KeyboardAvoidingView style={{flex: 1}} 
+                                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
+            <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
+                <Formik initialValues={initialValues} 
+                        validationSchema={RegisterSchema}
+                        onSubmit={onSubmit}>    
 
-                {({values ,handleSubmit, isSubmitting, handleBlur, handleChange}) => {
-                    const password = values.password || '';
+                    {({values ,handleSubmit, isSubmitting, handleBlur, handleChange}) => {
+                        const password = values.password || '';
 
-                    const checks = [
-                        {label: 'Tiene una mayuscula', isValid: passwordRegex.hasUpper.test(password) },
-                        {label: 'Tiene una minuscula', isValid: passwordRegex.hasLower.test(password) },
-                        {label: 'Tiene un numero', isValid: passwordRegex.hasNumber.test(password) },
-                        {label: 'Tiene 10 caracteres', isValid: passwordRegex.minLength.test(password) },
-                    ]
+                        const checks = [
+                            {label: 'Tiene una mayuscula', isValid: passwordRegex.hasUpper.test(password) },
+                            {label: 'Tiene una minuscula', isValid: passwordRegex.hasLower.test(password) },
+                            {label: 'Tiene un numero', isValid: passwordRegex.hasNumber.test(password) },
+                            {label: 'Tiene 10 caracteres', isValid: passwordRegex.minLength.test(password) },
+                        ]
 
-                return (
-                    <View style={styles.formContainer}>
-                        <Text style={styles.subtext}>Formulario para poder registrar tu usuario en la aplicacion</Text>
-                        <FormInput name="name" 
-                                   placeholder="Nombre completo"
-                                   style={styles.inputText} 
-                                   rightIcon={<MaterialCommunityIcons name="human-greeting" size={20}/>}/>
-                        <FormInput name="email" 
-                                   placeholder="Correo electronico"
-                                   style={styles.inputText} 
-                                   rightIcon={<MaterialCommunityIcons name="at" size={20}/>}/>
-                        <FormInput name="password" 
-                                   placeholder="Contraseña"
-                                   style={styles.inputText} 
-                                   rightIcon={<MaterialCommunityIcons name="security" size={20}/>}
-                                   onChangeText={handleChange('password')}
-                                   onBlur={handleBlur('password')}
-                                   value={password}/>
+                    return (
+                        <View style={styles.formContainer}>
+                            <Text style={styles.subtext}>Formulario para poder registrar tu usuario en la aplicacion</Text>
+                            <FormInput name="name" 
+                                    placeholder="Nombre completo"
+                                    style={styles.inputText} 
+                                    rightIcon={<MaterialCommunityIcons name="human-greeting" size={20}/>}/>
+                            <FormInput name="email" 
+                                    placeholder="Correo electronico"
+                                    style={styles.inputText} 
+                                    rightIcon={<MaterialCommunityIcons name="at" size={20}/>}/>
+                            <FormInput name="password" 
+                                    placeholder="Contraseña"
+                                    style={styles.inputText} 
+                                    rightIcon={<MaterialCommunityIcons name="security" size={20}/>}
+                                    value={password}/>
 
-                        {checks.map((check, index) => (
-                            <View key={index} style={styles.containerCheckMap}>
-                                <Text style={styles.text}>{check.label}</Text>
-                                <MaterialCommunityIcons name={check.isValid ? 'check-circle' : 'close-circle'}
-                                                        color={check.isValid ? 'green' : 'red'}
-                                                        size={20}/>
-                            </View>
-                        ))}
-                        
-                        <FormInput name="repeatPassword" 
-                                   placeholder="Repetir Contraseña"
-                                   style={styles.inputText} 
-                                   rightIcon={<MaterialCommunityIcons name="exclamation-thick" size={20}/>}/>
+                            {checks.map((check, index) => (
+                                <View key={index} style={styles.containerCheckMap}>
+                                    <Text style={styles.text}>{check.label}</Text>
+                                    <MaterialCommunityIcons name={check.isValid ? 'check-circle' : 'close-circle'}
+                                                            color={check.isValid ? 'green' : 'red'}
+                                                            size={20}/>
+                                </View>
+                            ))}
+                            
+                            <FormInput name="repeatPassword" 
+                                    placeholder="Repetir Contraseña"
+                                    style={styles.inputText} 
+                                    rightIcon={<MaterialCommunityIcons name="exclamation-thick" size={20}/>}/>
 
-                        <TouchableOpacity style={styles.button} onPress={() => handleSubmit()} disabled={isSubmitting}>
-                            <Text style={styles.buttonText}>
-                                {isSubmitting ? 'Registrando...' : 'Registrarse'} 
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                )}}
-            </Formik>
-        </View>
+                            <TouchableOpacity style={styles.button} onPress={() => handleSubmit()} disabled={isSubmitting}>
+                                <Text style={styles.buttonText}>
+                                    {isSubmitting ? 'Registrando...' : 'Registrarse'} 
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}}
+                </Formik>
+            </ScrollView>
+        </KeyboardAvoidingView>
     )}

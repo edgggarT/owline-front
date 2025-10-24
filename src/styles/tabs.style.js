@@ -4,7 +4,8 @@ import { colors, fonts } from "./globalStyle";
 
 export const styles = StyleSheet.create({
     header: {
-        backgroundColor: colors.primaryColor
+        backgroundColor: colors.backgroundColor,
+        borderWidth: 0,
     },
 
     headText: {

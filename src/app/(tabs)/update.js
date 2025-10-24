@@ -21,7 +21,6 @@ export default function Update() {
     
     const onUpdate = async (fieldsToUpdate) => {
         setIsUpdating(true)
-
         try {
             const response = await axios.patch(`${API_URLS.BASE_URL}${API_URLS.CLIENTS}`, {dni: dniToUpdate, 
                                                                                            updates: fieldsToUpdate})
@@ -35,7 +34,16 @@ export default function Update() {
             console.log('Se enviaron los siguientes datos: ', fieldsToUpdate)
             console.log('Respuesta del backend :', response.data)
         } catch (e) {
-            console.log('Error: ', e)
+            if (e.response) {
+                const statusCode = e.response.status
+                const err = e.response?.data.msg
+
+                if (statusCode === 409) {
+                    if (err === 'El email ya esta registrado') {
+                        Alert.alert('Error', err)
+                    }
+                }
+            }
         } finally {
             setIsUpdating(false)
         }
@@ -191,10 +199,10 @@ export default function Update() {
                                                             onBlur={handleBlur('direccion_calle')}
                                                             value={values.direccion_calle}/>
                                                         <TouchableOpacity onPress={() => handleSubmit()} 
-                                                                            disabled={isSubmitting}
+                                                                            disabled={isUpdating}
                                                                             style={styles.button}>
                                                             <Text style={styles.buttonText}>
-                                                                {isSubmitting ? 'Actualizando...' : 'Actualizar'}
+                                                                {isUpdating ? 'Actualizando...' : 'Actualizar'}
                                                             </Text>
                                                         </TouchableOpacity>
                                                     </View>

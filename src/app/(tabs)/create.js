@@ -1,5 +1,5 @@
 import { Formik, Field } from "formik";
-import { View, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import Toast from "react-native-toast-message";
 import { CreateSchema } from "../../hooks/CreateSchema";
 import { API_URLS } from "../../constants/ApiConfig";
@@ -24,16 +24,19 @@ export default function Create() {
                     visibilityTime: 4000,
                 })
                 resetForm()
-            } else {
-                Toast.show({
-                type: "error",
-                position: 'top',
-                text1: 'Error de regitro',
-                visibilityTime: 4000,
-                })
             }
         } catch (e) {
             console.error('Error: ', e)
+
+            if (e.response) {
+                const statusCode = e.response.status
+                const err = e.response?.data.msg
+
+
+                if (statusCode === 409) {
+                    Alert.alert('Error', err)
+                }
+            }
         }
     }
 

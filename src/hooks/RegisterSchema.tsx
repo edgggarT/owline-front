@@ -9,8 +9,7 @@ export const RegisterSchema = yup.object().shape({
               .required('Este campo es obligatorio!, Recuerda completarlo'),
     password: yup.string()
                  .required('Este campo es obligatorio!, Recuerda completarlo')
-                 .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/, 'La contraseña debe cumplir con todas las especificaciones!')
-                 .min(10, 'Minimo de 10 caracteres!'),
+                 .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{10,}$/, 'La contraseña debe cumplir con todas las especificaciones!'),
     repeatPassword: yup.string()
                        .required('Este campo es obligatorio!, Recuerda completarlo')
                        .oneOf([yup.ref('password')], 'Las contraseñas no coinciden!')

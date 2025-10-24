@@ -3,9 +3,13 @@ import { colors, fonts } from "./globalStyle";
 
 export const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
     backgroundColor: colors.backgroundColor,
+  },
+  scroll: {
+    flex: 1,
+    backgroundColor: colors.backgroundColor
   },
   subtext: {
     marginTop: 40,

@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
-    marginTop: 20,
+    marginTop: 2,
   },
   buttonText: {
     color: colors.secondaryColor,

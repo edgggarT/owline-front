@@ -1,5 +1,6 @@
 export const API_URLS = {
-    BASE_URL: 'http://owline-database.com.mialias.net',
+    // BASE_URL: 'https://Edgar1234.pythonanywhere.com',
+    BASE_URL: 'http://192.168.0.164:5000',
     LOGIN: '/api/v1/auth/login',
     LOGOUT: '/api/v1/auth/logout',
     REGISTER: '/api/v1/auth/register',

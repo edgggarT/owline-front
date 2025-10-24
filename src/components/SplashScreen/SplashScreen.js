@@ -9,7 +9,7 @@ import {styles} from './SplashScreen.style'
 export default function SplashScreenComponent() {
     return (
         <View style={styles.container}>
-            <LottieView source={Loading} autoPlay loop={false} style={styles.lottie}/>
+            <LottieView source={Loading} autoPlay loop={true} style={styles.lottie}/>
         </View>
     )
 }

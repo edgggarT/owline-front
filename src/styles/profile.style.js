@@ -10,7 +10,7 @@ export const stylesProf = StyleSheet.create({
         color: colors.colorText
     },
     header: {
-        backgroundColor: colors.primaryColor
+        backgroundColor: colors.backgroundColor
     }
 }) 
 

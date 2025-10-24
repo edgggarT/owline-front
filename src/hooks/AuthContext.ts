@@ -8,6 +8,11 @@ export interface UserInfo {
     email: string;
 }
 
+export interface RegisterResult {
+    success: boolean;
+    type?: 'network' | 'conflict' | 'unknown';
+}
+
 
 // DEFINIMOS EL CONTRATO PARA TODO EL CONTEXTO
 export interface AuthContextType {
@@ -18,7 +23,7 @@ export interface AuthContextType {
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
     updateUserInfo: (info: UserInfo) => void;
-    register: (name: string, email: string, password: string) => Promise<Boolean>;
+    register: (name: string, email: string, password: string) => Promise<RegisterResult>;
 }
 
 

@@ -9,11 +9,23 @@ import Toast from 'react-native-toast-message'
 import styles from '../../styles/home.style'
 import { API_URLS } from '../../constants/ApiConfig'
 import { useFilterScreenChildren } from 'expo-router/build/layouts/withLayoutContext'
+import socket from '../../hooks/socket'
 
 export default function Index() {
 
     const params = useLocalSearchParams()
     const [logs, setLogs] = useState(null)
+
+
+    const fetchLogs = useCallback(async () => {
+        try {
+            const response = await axios.get(`${API_URLS.BASE_URL}${API_URLS.LOGS}`)
+            console.log('Logs obtenidos del backend')
+            setLogs(response.data)
+        } catch (e) {
+            console.error('Error al obtener logs: ', e)
+        }
+    }, [])
 
     useEffect(() => {
         if (params.logued === 'true') {
@@ -27,7 +39,20 @@ export default function Index() {
     }, [params.logued])
 
 
-    useFocusEffect(
+    useEffect(() => {
+        fetchLogs()
+
+        socket.on('Log actualizado', (data) => {
+            console.log('Notificacion de socket: ', data.message)
+            fetchLogs()
+        })
+
+        return () => {
+            socket.off('Log actualizado')
+        }
+    }, [fetchLogs])
+
+/*     useFocusEffect(
         useCallback(() => {
             let isActive = true;
 
@@ -46,7 +71,7 @@ export default function Index() {
                 isActive = false
             }
         }, [])
-    )
+    ) */
 
     const Item = ({log}) => {
         const {accion, clientenombre, clienteapellido, fecha_accion, usuarioemail} = log;

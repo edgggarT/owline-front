@@ -23,8 +23,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: colors.backgroundColor,
-        borderWidth: 1,
+        backgroundColor: colors.backgroundColor
     },
     list: {
         marginBottom: 120,
@@ -32,7 +31,6 @@ const styles = StyleSheet.create({
     messageCont: {
         padding: 5,
         alignItems: 'center',
-        borderWidth: 1,
         margin: 20,
     },
     message: {
